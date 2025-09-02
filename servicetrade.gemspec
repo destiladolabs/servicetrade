@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = "servicetrade"
   spec.version       = ServiceTrade::VERSION
   spec.authors       = ["Bryce Holcomb"]
-  spec.email         = ["bryce@destilado.com"]
+  spec.email         = ["bryce@destilado.tech"]
   spec.summary       = "Ruby client for the ServiceTrade API"
   spec.description   = "A Ruby library for interacting with the ServiceTrade API"
   spec.homepage      = "https://github.com/destilado/servicetrade-ruby"
@@ -18,4 +18,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "stringio", "~> 3.1.2"
 end

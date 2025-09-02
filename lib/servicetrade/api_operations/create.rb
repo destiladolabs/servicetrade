@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module ServiceTrade
-  module APIOperations
+  module ApiOperations
     module Create
       def create(params = {})
-        response = @client.post(resource_url, params)
-        convert_to_servicetrade_object(response)
+        response = ServiceTrade.client.request(:post, resource_url, params)
+        new(response['data'])
       end
     end
   end

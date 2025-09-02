@@ -55,6 +55,8 @@ module ServiceTrade
     def handle_response(response)
       case response.code.to_i
       when 200..299
+        # Handle 204 No Content responses
+        return {} if response.body.nil? || response.body.strip.empty?
         JSON.parse(response.body)
       when 401
         raise ServiceTrade::AuthenticationError, "Invalid credentials or expired session"

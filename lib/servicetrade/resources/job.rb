@@ -5,13 +5,145 @@ module ServiceTrade
     extend ServiceTrade::ApiOperations::Update
     extend ServiceTrade::ApiOperations::Delete
 
-    OBJECT_NAME = 'jobs'.freeze
+    OBJECT_NAME = 'job'.freeze
 
-    attr_reader :id, :name, :status, :customer_id, :location_id,
-    :scheduled_date, :completed_date, :created_at, :updated_at
+    # Core job attributes
+    attr_reader :id, :uri, :name, :custom_name, :type, :job_type_weight,
+                :status, :display_status, :substatus, :display_substatus,
+                :number, :ref_number, :customer_po, :visibility, :section_visibilities,
+                :description, :scheduled_date, :estimated_price, :latest_clock_in,
+                :ivr_open, :ivr_activity, :service_line, :due_by, :due_after,
+                :completed_on, :percent_complete, :is_project, :budgeted,
+                :created, :updated
+
+    # Related objects
+    attr_reader :vendor, :customer, :location, :owner, :sales, :primary_contact,
+                :current_appointment, :assigned_office, :offices, :tags,
+                :external_ids, :terms, :contract, :project, :notes,
+                :service_requests, :scheduling_comments
+
+    # Service link visibility
+    attr_reader :service_link_attachment_visibility, :service_link_comment_visibility,
+                :service_link_attachment_category_visibility
+
+    # Deprecated fields (kept for backwards compatibility)
+    attr_reader :deficiencies_found, :other_trade_deficiencies_found, :red_tags_found
 
     def self.resource_url
       OBJECT_NAME
+    end
+
+    # Find a specific job by ID
+    def self.find(id)
+      response = ServiceTrade.client.request(:get, "#{resource_url}/#{id}")
+      new(response['data'])
+    end
+
+    # Enhanced list method with comprehensive filtering
+    def self.list(filters = {})
+      # Set default status to 'scheduled' if not provided and no job number is specified
+      unless filters.key?(:status) || filters.key?('status') || filters.key?(:number) || filters.key?('number')
+        filters[:status] = 'scheduled'
+      end
+
+      response = ServiceTrade.client.request(:get, resource_url, filters)
+      
+      # Handle the nested response structure from ServiceTrade API
+      jobs_data = response.dig('data', 'jobs') || response['data'] || []
+      jobs_data.map { |job_data| new(job_data) }
+    end
+
+    # Create a new job
+    def self.create(params = {})
+      response = ServiceTrade.client.request(:post, resource_url, params)
+      new(response['data'])
+    end
+
+    # Update an existing job
+    def self.update(id, params = {})
+      response = ServiceTrade.client.request(:put, "#{resource_url}/#{id}", params)
+      new(response['data'])
+    end
+
+    # Update this job instance
+    def update(params = {})
+      self.class.update(id, params)
+    end
+
+    # Delete a job
+    def self.delete(id)
+      ServiceTrade.client.request(:delete, "#{resource_url}/#{id}")
+      true
+    end
+
+    # Delete this job instance
+    def delete
+      self.class.delete(id)
+    end
+
+    # Add task responses to a job
+    def add_task_responses(task_responses)
+      params = { task_responses: task_responses }
+      response = ServiceTrade.client.request(:post, "#{self.class.resource_url}/#{id}/taskresponses", params)
+      response['data']
+    end
+
+    # Convenience methods for common job filtering
+    def self.by_status(status)
+      list(status: status)
+    end
+
+    def self.by_customer(customer_id)
+      list(customer_id: customer_id)
+    end
+
+    def self.by_vendor(vendor_id)
+      list(vendor_id: vendor_id)
+    end
+
+    def self.by_location(location_id)
+      list(location_id: location_id)
+    end
+
+    def self.by_owner(owner_id)
+      list(owner_id: owner_id)
+    end
+
+    def self.around_location(lat, lon, radius)
+      list(lat: lat, lon: lon, radius: radius)
+    end
+
+    def self.due_between(start_timestamp, end_timestamp)
+      list(due_by_begin: start_timestamp, due_by_end: end_timestamp)
+    end
+
+    def self.completed_between(start_timestamp, end_timestamp)
+      list(completed_on_begin: start_timestamp, completed_on_end: end_timestamp)
+    end
+
+    # Check if job is completed
+    def completed?
+      status == 'completed'
+    end
+
+    # Check if job is canceled
+    def canceled?
+      status == 'canceled'
+    end
+
+    # Check if job is scheduled
+    def scheduled?
+      status == 'scheduled'
+    end
+
+    # Check if job is invoiced
+    def invoiced?
+      status == 'invoiced'
+    end
+
+    # Check if job has IVR activity open
+    def ivr_open?
+      ivr_open == true
     end
   end
 end

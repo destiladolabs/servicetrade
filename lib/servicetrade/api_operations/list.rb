@@ -41,10 +41,23 @@ module ServiceTrade
     attr_reader :data, :total_count, :page, :per_page
 
     def initialize(response, resource_class)
-      @data = response['data'].map { |item| resource_class.new(item) }
-      @total_count = response['total']
-      @page = response['page']
-      @per_page = response['per_page']
+      # Handle ServiceTrade API response format
+      data_key = case resource_class.name.split('::').last.downcase
+                 when 'job'
+                   'jobs'
+                 when 'appointment'
+                   'appointments'
+                 when 'location'
+                   'locations'
+                 else
+                   'data'
+                 end
+      
+      items = response.dig('data', data_key) || response['data'] || []
+      @data = items.map { |item| resource_class.new(item) }
+      @total_count = response.dig('data', 'total') || response['total'] || items.length
+      @page = response.dig('data', 'page') || response['page'] || 1
+      @per_page = response.dig('data', 'per_page') || response['per_page'] || items.length
     end
 
     def has_more?
