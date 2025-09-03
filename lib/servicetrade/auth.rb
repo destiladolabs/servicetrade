@@ -65,12 +65,14 @@ module ServiceTrade
           skip_auth: true
         )
         
-        unless response.dig('data', 'authenticated')
+        # Handle both nested and direct response formats
+        auth_data = response['data'] || response
+        unless auth_data['authenticated']
           error_message = response.dig('messages', 'error')&.first || 'Authentication failed'
           raise ServiceTrade::AuthenticationError, enhance_auth_error_message(error_message)
         end
         
-        response['data']
+        auth_data
       rescue ServiceTrade::AuthenticationError
         raise
       rescue ServiceTrade::AuthorizationError
@@ -97,13 +99,15 @@ module ServiceTrade
           skip_auth: true
         )
         
-        unless response.dig('data', 'authenticated')
+        # Handle both nested and direct response formats  
+        auth_data = response['data'] || response
+        unless auth_data['authenticated']
           error_message = response.dig('messages', 'error')&.first || 'OAuth authentication failed'
           raise ServiceTrade::AuthenticationError, "#{error_message}\n\n" \
                                                    "Please verify your OAuth tokens are valid and try again."
         end
         
-        response['data']
+        auth_data
       rescue ServiceTrade::AuthenticationError
         raise
       rescue ServiceTrade::AuthorizationError
@@ -119,11 +123,13 @@ module ServiceTrade
       def current_user_info
         response = ServiceTrade::Client.new.request(:get, 'auth')
         
-        unless response.dig('data', 'authenticated')
+        # Handle both nested and direct response formats
+        auth_data = response['data'] || response
+        unless auth_data['authenticated']
           raise ServiceTrade::AuthenticationError, "No active authentication session found"
         end
         
-        response['data']
+        auth_data
       rescue ServiceTrade::NotFoundError
         raise ServiceTrade::AuthenticationError, "No active authentication session found"
       end
