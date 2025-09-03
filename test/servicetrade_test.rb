@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class ServiceTradeTest < Minitest::Test
+class ServiceTradeTest < Test::Unit::TestCase
   def test_has_version_number
     refute_nil ::ServiceTrade::VERSION
   end
@@ -18,6 +18,6 @@ class ServiceTradeTest < Minitest::Test
   end
 
   def teardown
-    ServiceTrade.reset_configuration
+    ServiceTrade.reset!
   end
 end

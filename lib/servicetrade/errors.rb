@@ -4,4 +4,5 @@ module ServiceTrade
   class AuthenticationError < Error; end
   class AuthorizationError < Error; end
   class NotFoundError < Error; end
+  class ConfigurationError < Error; end
 end

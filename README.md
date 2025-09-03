@@ -22,7 +22,20 @@ Or install it yourself as:
 
 ## Configuration
 
-Configure the client with your ServiceTrade credentials:
+The gem supports two authentication methods:
+
+### Option 1: API Token Authentication (Recommended)
+
+```ruby
+ServiceTrade.configure do |config|
+  config.api_token = 'your_api_token'
+  config.api_version = '1'  # Optional, defaults to '1'
+  config.timeout = 30       # Optional, defaults to 30 seconds
+  config.open_timeout = 10  # Optional, defaults to 10 seconds
+end
+```
+
+### Option 2: Username/Password Authentication
 
 ```ruby
 ServiceTrade.configure do |config|
@@ -34,9 +47,82 @@ ServiceTrade.configure do |config|
 end
 ```
 
+### Using Environment Variables
+
+```ruby
+# For token authentication
+ServiceTrade.configure do |config|
+  config.api_token = ENV['SERVICETRADE_API_TOKEN']
+end
+
+# For username/password authentication
+ServiceTrade.configure do |config|
+  config.username = ENV['SERVICETRADE_USERNAME']
+  config.password = ENV['SERVICETRADE_PASSWORD']
+end
+```
+
 ## Authentication
 
-The gem automatically handles authentication with the ServiceTrade API using your username and password. Session management is handled internally.
+### Automatic Authentication
+
+The gem automatically handles authentication based on your configuration:
+
+- **Token Authentication**: Uses your API token with the `X-Auth-Token` header
+- **Session Authentication**: Uses username/password with session management handled internally
+
+### Manual Authentication Methods
+
+You can also authenticate manually and obtain API tokens:
+
+```ruby
+# Authenticate with username/password to get an API token
+auth_response = ServiceTrade::Auth.authenticate_with_credentials('username', 'password')
+api_token = auth_response['authToken']
+
+# Set the token for future requests
+ServiceTrade::Auth.set_api_token(api_token, auth_response['user'])
+
+# Or configure it globally
+ServiceTrade.configure do |config|
+  config.api_token = api_token
+end
+```
+
+### OAuth Authentication
+
+For OAuth flows, you can authenticate with OAuth tokens:
+
+```ruby
+# Authenticate with OAuth tokens (id_token and access_token)
+auth_response = ServiceTrade::Auth.authenticate_with_oauth_tokens(id_token, access_token)
+api_token = auth_response['authToken']
+
+# Set the token for future requests
+ServiceTrade::Auth.set_api_token(api_token, auth_response['user'])
+```
+
+### Checking Authentication Status
+
+```ruby
+# Check if currently authenticated
+if ServiceTrade::Auth.authenticated?
+  puts "Ready to make API calls"
+else
+  puts "Authentication required"
+end
+
+# Get current user information
+user_info = ServiceTrade::Auth.current_user_info
+puts "Logged in as: #{user_info['user']['username']}"
+```
+
+### Logout
+
+```ruby
+# Logout and invalidate current session/token
+ServiceTrade::Auth.logout
+```
 
 ## Usage
 
@@ -96,13 +182,31 @@ location = ServiceTrade::Location.create(
 
 ## Error Handling
 
-The gem provides specific error classes for different types of API errors:
+The gem provides specific error classes with helpful error messages:
+
+### Configuration Errors
+
+The gem will provide clear guidance if you haven't configured your credentials:
+
+```ruby
+begin
+  ServiceTrade::Job.list
+rescue ServiceTrade::ConfigurationError => e
+  puts e.message
+  # Outputs helpful message with configuration examples
+end
+```
+
+### API Errors
 
 ```ruby
 begin
   job = ServiceTrade::Job.create(invalid_data)
+rescue ServiceTrade::ConfigurationError => e
+  # Handle missing or invalid configuration
+  puts "Configuration error: #{e.message}"
 rescue ServiceTrade::AuthenticationError => e
-  # Handle authentication errors (401)
+  # Handle authentication errors (401) with enhanced messaging
   puts "Authentication failed: #{e.message}"
 rescue ServiceTrade::AuthorizationError => e
   # Handle authorization errors (403)
@@ -114,6 +218,22 @@ rescue ServiceTrade::ApiError => e
   # Handle other API errors
   puts "API error: #{e.message}"
 end
+```
+
+### Configuration Validation
+
+You can check if your configuration is valid:
+
+```ruby
+# Check if configured
+if ServiceTrade.configured?
+  puts "Ready to make API calls"
+else
+  puts "Please configure your credentials first"
+end
+
+# Validate configuration (raises error if invalid)
+ServiceTrade.validate_configuration!
 ```
 
 ## Available Resources

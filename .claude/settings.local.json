@@ -3,7 +3,9 @@
     "allow": [
       "Bash(bundle exec rake:*)",
       "Bash(cat:*)",
-      "Bash(bundle exec ruby:*)"
+      "Bash(bundle exec ruby:*)",
+      "Bash(ruby test:*)",
+      "Bash(ruby:*)"
     ],
     "deny": [],
     "ask": []

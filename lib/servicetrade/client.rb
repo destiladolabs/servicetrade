@@ -29,7 +29,7 @@ module ServiceTrade
       request['Content-Type'] = 'application/json'
       request['Accept'] = 'application/json'
       unless skip_auth
-        request['X-Session-Id'] = ServiceTrade.auth.session_id
+        add_authentication_header(request)
       end
       headers.each { |key, value| request[key] = value }
       
@@ -51,6 +51,21 @@ module ServiceTrade
     end
     
     private
+    
+    def add_authentication_header(request)
+      config = ServiceTrade.configuration
+      
+      if config&.token_auth_configured?
+        # Use API token authentication (preferred)
+        request['X-Auth-Token'] = config.api_token
+      elsif config&.username_password_auth_configured?
+        # Fall back to session-based authentication
+        request['X-Session-Id'] = ServiceTrade.auth.session_id
+      else
+        # This should be caught by validation, but just in case
+        raise ServiceTrade::ConfigurationError, "No valid authentication method configured"
+      end
+    end
     
     def handle_response(response)
       case response.code.to_i

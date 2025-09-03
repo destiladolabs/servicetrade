@@ -29,6 +29,7 @@ module ServiceTrade
   def self.configure
     self.configuration ||= Configuration.new
     yield(configuration) if block_given?
+    configuration
   end
 
   def self.auth
@@ -43,10 +44,22 @@ module ServiceTrade
     "https://api.servicetrade.com/api"
   end
 
+  # Check if ServiceTrade has been configured with valid credentials
+  def self.configured?
+    configuration&.configured? || false
+  end
+  
+  # Validate current configuration and raise error if invalid
+  def self.validate_configuration!
+    # Initialize configuration if nil so we can use the enhanced error message
+    self.configuration ||= Configuration.new
+    configuration.validate!
+  end
+
   # Reset all instances (useful for testing)
   def self.reset!
     @configuration = nil
-    @auth_instance = nil  
+    @auth_instance = nil
     @client_instance = nil
   end
 end
