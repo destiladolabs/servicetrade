@@ -287,4 +287,44 @@ class AuthTest < Test::Unit::TestCase
     assert_respond_to ServiceTrade::Auth, :set_api_token
     assert_respond_to ServiceTrade::Auth, :authenticated?
   end
+
+  def test_instance_authenticate_with_username_password
+    ServiceTrade.configure do |config|
+      config.username = "test_user"
+      config.password = "test_password"
+    end
+
+    # The auth instance should use the configured credentials
+    auth_instance = ServiceTrade.auth
+    session_id = auth_instance.authenticate
+    
+    # Should return session ID
+    assert_equal "test_session_123", session_id
+    
+    # Should store the auth token in instance variables
+    assert_equal "test_token_123", auth_instance.auth_token
+    
+    # Should update the configuration with the API token for future requests
+    assert_equal "test_token_123", ServiceTrade.configuration.api_token
+    
+    # Should now be token-auth configured
+    assert ServiceTrade.configuration.token_auth_configured?
+  end
+
+  def test_instance_authenticate_updates_configuration_for_api_token_usage
+    ServiceTrade.configure do |config|
+      config.username = "test_user" 
+      config.password = "test_password"
+    end
+
+    # Initially should be username/password configured
+    assert ServiceTrade.configuration.username_password_auth_configured?
+    refute ServiceTrade.configuration.token_auth_configured?
+    
+    # After authentication, should switch to token auth
+    ServiceTrade.auth.authenticate
+    
+    assert ServiceTrade.configuration.token_auth_configured?
+    assert ServiceTrade.configuration.username_password_auth_configured? # Both should be true
+  end
 end

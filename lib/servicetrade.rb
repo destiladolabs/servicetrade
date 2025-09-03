@@ -17,6 +17,7 @@ require_relative "servicetrade/resources/base_resource"
 require_relative "servicetrade/resources/job"
 require_relative "servicetrade/resources/appointment"
 require_relative "servicetrade/resources/location"
+require_relative "servicetrade/resources/region"
 
 require "net/http"
 require "json"

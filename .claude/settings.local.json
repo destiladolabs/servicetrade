@@ -5,7 +5,8 @@
       "Bash(cat:*)",
       "Bash(bundle exec ruby:*)",
       "Bash(ruby test:*)",
-      "Bash(ruby:*)"
+      "Bash(ruby:*)",
+      "Bash(bundle exec rubocop:*)"
     ],
     "deny": [],
     "ask": []

@@ -49,6 +49,8 @@ module ServiceTrade
                    'appointments'
                  when 'location'
                    'locations'
+                 when 'region'
+                   'regions'
                  else
                    'data'
                  end

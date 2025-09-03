@@ -32,18 +32,15 @@ module ServiceTrade
       new(response['data'])
     end
 
-    # Enhanced list method with comprehensive filtering
-    def self.list(filters = {})
+    # Enhanced list method with comprehensive filtering and pagination
+    def self.list(filters = {}, page: 1, per_page: 100)
       # Set default isCustomer to true if not specified
       unless filters.key?(:is_customer) || filters.key?('isCustomer')
         filters[:is_customer] = true
       end
 
-      response = ServiceTrade.client.request(:get, resource_url, filters)
-      
-      # Handle the nested response structure from ServiceTrade API
-      locations_data = response.dig('data', 'locations') || response['data'] || []
-      locations_data.map { |location_data| new(location_data) }
+      # Use the pagination from the List module
+      super(filters, page: page, per_page: per_page)
     end
 
     # Create a new location
@@ -104,67 +101,67 @@ module ServiceTrade
     end
 
     # Convenience methods for common location filtering
-    def self.by_name(name)
-      list(name: name)
+    def self.by_name(name, page: 1, per_page: 100)
+      list({name: name}, page: page, per_page: per_page)
     end
 
-    def self.by_company(company_id)
-      list(company_id: company_id)
+    def self.by_company(company_id, page: 1, per_page: 100)
+      list({company_id: company_id}, page: page, per_page: per_page)
     end
 
-    def self.by_ref_number(ref_number)
-      list(ref_number: ref_number)
+    def self.by_ref_number(ref_number, page: 1, per_page: 100)
+      list({ref_number: ref_number}, page: page, per_page: per_page)
     end
 
-    def self.by_status(status)
-      list(status: status)
+    def self.by_status(status, page: 1, per_page: 100)
+      list({status: status}, page: page, per_page: per_page)
     end
 
-    def self.by_region(region_ids)
+    def self.by_region(region_ids, page: 1, per_page: 100)
       region_ids = Array(region_ids).join(',') if region_ids.is_a?(Array)
-      list(region_ids: region_ids)
+      list({region_ids: region_ids}, page: page, per_page: per_page)
     end
 
-    def self.by_office(office_ids)
+    def self.by_office(office_ids, page: 1, per_page: 100)
       office_ids = Array(office_ids).join(',') if office_ids.is_a?(Array)
-      list(office_ids: office_ids)
+      list({office_ids: office_ids}, page: page, per_page: per_page)
     end
 
-    def self.customers_only
-      list(is_customer: true)
+    def self.customers_only(page: 1, per_page: 100)
+      list({is_customer: true}, page: page, per_page: per_page)
     end
 
-    def self.vendors_only
-      list(is_vendor: true)
+    def self.vendors_only(page: 1, per_page: 100)
+      list({is_vendor: true}, page: page, per_page: per_page)
     end
 
-    def self.active_locations
-      list(status: 'active')
+    def self.active_locations(page: 1, per_page: 100)
+      list({status: 'active'}, page: page, per_page: per_page)
     end
 
-    def self.inactive_locations
-      list(status: 'inactive')
+    def self.inactive_locations(page: 1, per_page: 100)
+      list({status: 'inactive'}, page: page, per_page: per_page)
     end
 
-    def self.updated_after(timestamp)
-      list(updated_after: timestamp)
+    def self.updated_after(timestamp, page: 1, per_page: 100)
+      list({updated_after: timestamp}, page: page, per_page: per_page)
     end
 
-    def self.updated_before(timestamp)
-      list(updated_before: timestamp)
+    def self.updated_before(timestamp, page: 1, per_page: 100)
+      list({updated_before: timestamp}, page: page, per_page: per_page)
     end
 
-    def self.created_after(timestamp)
-      list(created_after: timestamp)
+    def self.created_after(timestamp, page: 1, per_page: 100)
+      list({created_after: timestamp}, page: page, per_page: per_page)
     end
 
-    def self.created_before(timestamp)
-      list(created_before: timestamp)
+    def self.created_before(timestamp, page: 1, per_page: 100)
+      list({created_before: timestamp}, page: page, per_page: per_page)
     end
 
-    def self.with_tags(tags)
+    def self.with_tags(tags, page: 1, per_page: 100)
       tags = Array(tags).join(',') if tags.is_a?(Array)
-      list(tag: tags)
+      list({tag: tags}, page: page, per_page: per_page)
     end
 
     # Status check methods

@@ -56,11 +56,12 @@ module ServiceTrade
       config = ServiceTrade.configuration
 
       if config&.token_auth_configured?
-        # Use API token authentication (preferred)
-        request['X-Auth-Token'] = config.api_token
+        request['Cookie'] = "PHPSESSID=#{config.api_token}"
+        # Use PHPSESSID cookie for API token authentication
       elsif config&.username_password_auth_configured?
-        # Fall back to session-based authentication
-        request['X-Session-Id'] = ServiceTrade.auth.session_id
+        auth = ServiceTrade::Auth.new
+        auth.authenticate
+        request['Cookie'] = "PHPSESSID=#{auth.auth_token}"
       else
         # This should be caught by validation, but just in case
         raise ServiceTrade::ConfigurationError, "No valid authentication method configured"
@@ -74,7 +75,7 @@ module ServiceTrade
         return {} if response.body.nil? || response.body.strip.empty?
         JSON.parse(response.body)
       when 401
-        raise ServiceTrade::AuthenticationError, "Invalid credentials or expired session #{response.body}"
+        raise ServiceTrade::AuthenticationError, "Invalid credentials or expired session"
       when 403
         raise ServiceTrade::AuthorizationError, "Not authorized to perform this action"
       when 404

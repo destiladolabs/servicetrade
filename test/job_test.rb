@@ -98,13 +98,13 @@ class JobTest < Test::Unit::TestCase
         headers: {'Content-Type' => 'application/json'}
       )
 
-    jobs = ServiceTrade::Job.list
+    jobs_response = ServiceTrade::Job.list
     
-    assert_equal 2, jobs.length
-    assert_equal 123, jobs.first.id
-    assert_equal 'Test Job 1', jobs.first.name
-    assert_equal 456, jobs.last.id
-    assert_equal 'Test Job 2', jobs.last.name
+    assert_equal 2, jobs_response.data.length
+    assert_equal 123, jobs_response.data.first.id
+    assert_equal 'Test Job 1', jobs_response.data.first.name
+    assert_equal 456, jobs_response.data.last.id
+    assert_equal 'Test Job 2', jobs_response.data.last.name
   end
 
   def test_job_find_with_mocked_response

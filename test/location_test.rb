@@ -160,13 +160,13 @@ class LocationTest < Test::Unit::TestCase
         headers: {'Content-Type' => 'application/json'}
       )
 
-    locations = ServiceTrade::Location.list
+    locations_response = ServiceTrade::Location.list
     
-    assert_equal 2, locations.length
-    assert_equal 123, locations.first.id
-    assert_equal 'Test Location 1', locations.first.name
-    assert_equal 456, locations.last.id
-    assert_equal 'Test Location 2', locations.last.name
+    assert_equal 2, locations_response.data.length
+    assert_equal 123, locations_response.data.first.id
+    assert_equal 'Test Location 1', locations_response.data.first.name
+    assert_equal 456, locations_response.data.last.id
+    assert_equal 'Test Location 2', locations_response.data.last.name
   end
 
   def test_location_find_with_mocked_response

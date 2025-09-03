@@ -39,18 +39,15 @@ module ServiceTrade
       new(response['data'])
     end
 
-    # Enhanced list method with comprehensive filtering
-    def self.list(filters = {})
+    # Enhanced list method with comprehensive filtering and pagination
+    def self.list(filters = {}, page: 1, per_page: 100)
       # Set default status to 'scheduled' if not provided and no job number is specified
       unless filters.key?(:status) || filters.key?('status') || filters.key?(:number) || filters.key?('number')
         filters[:status] = 'scheduled'
       end
 
-      response = ServiceTrade.client.request(:get, resource_url, filters)
-      
-      # Handle the nested response structure from ServiceTrade API
-      jobs_data = response.dig('data', 'jobs') || response['data'] || []
-      jobs_data.map { |job_data| new(job_data) }
+      # Use the pagination from the List module
+      super(filters, page: page, per_page: per_page)
     end
 
     # Create a new job
@@ -89,36 +86,36 @@ module ServiceTrade
     end
 
     # Convenience methods for common job filtering
-    def self.by_status(status)
-      list(status: status)
+    def self.by_status(status, page: 1, per_page: 100)
+      list({status: status}, page: page, per_page: per_page)
     end
 
-    def self.by_customer(customer_id)
-      list(customer_id: customer_id)
+    def self.by_customer(customer_id, page: 1, per_page: 100)
+      list({customer_id: customer_id}, page: page, per_page: per_page)
     end
 
-    def self.by_vendor(vendor_id)
-      list(vendor_id: vendor_id)
+    def self.by_vendor(vendor_id, page: 1, per_page: 100)
+      list({vendor_id: vendor_id}, page: page, per_page: per_page)
     end
 
-    def self.by_location(location_id)
-      list(location_id: location_id)
+    def self.by_location(location_id, page: 1, per_page: 100)
+      list({location_id: location_id}, page: page, per_page: per_page)
     end
 
-    def self.by_owner(owner_id)
-      list(owner_id: owner_id)
+    def self.by_owner(owner_id, page: 1, per_page: 100)
+      list({owner_id: owner_id}, page: page, per_page: per_page)
     end
 
-    def self.around_location(lat, lon, radius)
-      list(lat: lat, lon: lon, radius: radius)
+    def self.around_location(lat, lon, radius, page: 1, per_page: 100)
+      list({lat: lat, lon: lon, radius: radius}, page: page, per_page: per_page)
     end
 
-    def self.due_between(start_timestamp, end_timestamp)
-      list(due_by_begin: start_timestamp, due_by_end: end_timestamp)
+    def self.due_between(start_timestamp, end_timestamp, page: 1, per_page: 100)
+      list({due_by_begin: start_timestamp, due_by_end: end_timestamp}, page: page, per_page: per_page)
     end
 
-    def self.completed_between(start_timestamp, end_timestamp)
-      list(completed_on_begin: start_timestamp, completed_on_end: end_timestamp)
+    def self.completed_between(start_timestamp, end_timestamp, page: 1, per_page: 100)
+      list({completed_on_begin: start_timestamp, completed_on_end: end_timestamp}, page: page, per_page: per_page)
     end
 
     # Check if job is completed
