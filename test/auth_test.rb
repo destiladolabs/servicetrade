@@ -219,9 +219,9 @@ class AuthTest < Test::Unit::TestCase
       config.api_token = "test_token_header"
     end
 
-    # Mock a simple API call to verify header
+    # Mock a simple API call to verify cookie
     stub_request(:get, "https://api.servicetrade.com/api/job")
-      .with(headers: {'X-Auth-Token' => 'test_token_header'})
+      .with(headers: {'Cookie' => 'PHPSESSID=test_token_header'})
       .to_return(
         status: 200,
         body: '{"data": {"jobs": []}}',
@@ -230,7 +230,7 @@ class AuthTest < Test::Unit::TestCase
 
     ServiceTrade::Job.list
     
-    # If we get here without an error, the header was sent correctly
+    # If we get here without an error, the cookie was sent correctly
     assert true
   end
 
@@ -240,9 +240,9 @@ class AuthTest < Test::Unit::TestCase
       config.password = "test_password"
     end
 
-    # Mock a simple API call to verify session header is used
+    # Mock a simple API call to verify session cookie is used
     stub_request(:get, "https://api.servicetrade.com/api/job")
-      .with(headers: {'X-Session-Id' => 'test_session_123'})
+      .with(headers: {'Cookie' => 'PHPSESSID=test_token_123'})
       .to_return(
         status: 200,
         body: '{"data": {"jobs": []}}',
@@ -251,7 +251,7 @@ class AuthTest < Test::Unit::TestCase
 
     ServiceTrade::Job.list
     
-    # If we get here without an error, the session header was sent correctly
+    # If we get here without an error, the session cookie was sent correctly
     assert true
   end
 

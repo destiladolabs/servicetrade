@@ -21,7 +21,7 @@ class RegionTest < Test::Unit::TestCase
       )
       .to_return(
         status: 200,
-        body: '{"sessionId":"test_session_123"}',
+        body: '{"sessionId": "test_session_123", "data": {"authenticated": true, "authToken": "test_session_123", "user": {"id": 1, "username": "test_user"}}}',
         headers: {'Content-Type' => 'application/json'}
       )
   end

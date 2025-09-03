@@ -74,7 +74,7 @@ module ServiceTrade
     # Merge this location into another location
     def merge(replacement_id)
       params = { replacement_id: replacement_id }
-      response = ServiceTrade.client.request(:post, "#{self.class.resource_url}/#{id}/merge", params)
+      response = ServiceTrade.client.request(:post, "#{self.class.resource_url}/#{id}/merge", params, {})
       self.class.new(response['data'])
     end
 

@@ -220,9 +220,8 @@ module ServiceTrade
       # Validate username/password configuration
       return if ServiceTrade.configuration.username_password_auth_configured?
 
-      raise ServiceTrade::ConfigurationError,
-            "Username and password are required for session authentication. " \
-            "Either configure username/password or use token authentication."
+      # Use the enhanced configuration error message
+      ServiceTrade.configuration.validate!
     end
 
     def session_expired?

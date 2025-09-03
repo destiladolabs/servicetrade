@@ -51,6 +51,10 @@ module ServiceTrade
                    'locations'
                  when 'region'
                    'regions'
+                 when 'company'
+                   'companies'
+                 when 'contact'
+                   'contacts'
                  else
                    'data'
                  end

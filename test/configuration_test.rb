@@ -31,8 +31,8 @@ class ConfigurationTest < Test::Unit::TestCase
       ServiceTrade.configuration.validate!
     end
     
-    assert_match(/Username is required/, error.message)
-    assert_match(/ServiceTrade\.configure/, error.message)
+    assert_match(/ServiceTrade configuration is incomplete/, error.message)
+    assert_match(/Option 1 - API Token Authentication/, error.message)
   end
 
   def test_missing_password
@@ -47,8 +47,8 @@ class ConfigurationTest < Test::Unit::TestCase
       ServiceTrade.configuration.validate!
     end
     
-    assert_match(/Password is required/, error.message)
-    assert_match(/ServiceTrade\.configure/, error.message)
+    assert_match(/ServiceTrade configuration is incomplete/, error.message)
+    assert_match(/Option 2 - Username\/Password Authentication/, error.message)
   end
 
   def test_empty_username
@@ -63,7 +63,7 @@ class ConfigurationTest < Test::Unit::TestCase
       ServiceTrade.configuration.validate!
     end
     
-    assert_match(/Username is required/, error.message)
+    assert_match(/ServiceTrade configuration is incomplete/, error.message)
   end
 
   def test_empty_password
@@ -78,7 +78,7 @@ class ConfigurationTest < Test::Unit::TestCase
       ServiceTrade.configuration.validate!
     end
     
-    assert_match(/Password is required/, error.message)
+    assert_match(/ServiceTrade configuration is incomplete/, error.message)
   end
 
   def test_missing_both_credentials
@@ -92,9 +92,9 @@ class ConfigurationTest < Test::Unit::TestCase
       ServiceTrade.configuration.validate!
     end
     
-    assert_match(/Username is required/, error.message)
-    assert_match(/Password is required/, error.message)
-    assert_match(/Example configuration/, error.message)
+    assert_match(/ServiceTrade configuration is incomplete/, error.message)
+    assert_match(/ServiceTrade configuration is incomplete/, error.message)
+    assert_match(/Option 1 - API Token Authentication/, error.message)
     assert_match(/environment variables/, error.message)
   end
 
@@ -135,7 +135,7 @@ class ConfigurationTest < Test::Unit::TestCase
       ServiceTrade.auth.authenticate
     end
     
-    assert_match(/Password is required/, error.message)
+    assert_match(/ServiceTrade configuration is incomplete/, error.message)
   end
 
   def test_enhanced_authentication_error_message

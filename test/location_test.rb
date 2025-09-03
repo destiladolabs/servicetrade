@@ -21,7 +21,7 @@ class LocationTest < Test::Unit::TestCase
       )
       .to_return(
         status: 200,
-        body: '{"sessionId":"test_session_123"}',
+        body: '{"sessionId": "test_session_123", "data": {"authenticated": true, "authToken": "test_session_123", "user": {"id": 1, "username": "test_user"}}}',
         headers: {'Content-Type' => 'application/json'}
       )
   end
@@ -54,7 +54,7 @@ class LocationTest < Test::Unit::TestCase
     assert_equal 'Test Location', location.name
     assert_equal '123-REF', location.ref_number
     assert_equal 35.7796, location.lat
-    assert_equal -78.6382, location.lon
+    assert_equal(-78.6382, location.lon)
     assert_equal 'active', location.status
     assert_equal true, location.taxable
     assert_equal '(555) 555-1234', location.phone_number
