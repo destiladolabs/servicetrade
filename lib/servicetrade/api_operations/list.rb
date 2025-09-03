@@ -8,7 +8,7 @@ module ServiceTrade
           per_page: per_page
         })
 
-        response = ServiceTrade.client.request(:get, resource_url, params)
+        response = ServiceTrade.client.request(:get, resource_url, params, {})
         ListResponse.new(response, self)
       end
 

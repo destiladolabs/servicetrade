@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "rake", "~> 13.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "test-unit", "~> 3.0"
+  spec.add_development_dependency "webmock", ">= 3.8.0"
   spec.add_development_dependency "stringio", "~> 3.1.2"
 end

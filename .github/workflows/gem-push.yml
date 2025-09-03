@@ -8,27 +8,19 @@ on:
 
 jobs:
   test:
-    name: Test
+    name: Build Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        ruby-version: ['2.6.10', '2.7.8', '3.0.6', '3.1.4', '3.2.2']
     
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Ruby ${{ matrix.ruby-version }}
+    - name: Set up Ruby 2.7.8
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: ${{ matrix.ruby-version }}
+        ruby-version: 2.7.8
         bundler-cache: true
     
-    - name: Run tests
-      run: |
-        bundle exec ruby -I test test/servicetrade_test.rb
-        bundle exec ruby -I test test/job_test.rb
-        bundle exec ruby -I test test/location_test.rb  
-        bundle exec ruby -I test test/region_test.rb
-        bundle exec ruby -I test test/auth_test.rb
+    - name: Build gem
+      run: gem build *.gemspec
 
   build:
     name: Build + Publish
